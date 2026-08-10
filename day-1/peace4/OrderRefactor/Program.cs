@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using OrderRefactor.Data;
 using OrderRefactor.Repositories;
 using OrderRefactor.Services;
+using OrderRefactor.Pricing;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,6 +13,8 @@ builder.Services.AddDbContext<OrderDbContext>(options =>
 
 builder.Services.AddScoped<IOrderRepository, OrderRepository>();
 builder.Services.AddScoped<IOrderService, OrderService>();
+builder.Services.AddScoped<IPricingStrategy, LargeOrderDiscountStrategy>();
+builder.Services.AddScoped<IPricingStrategy, VipDiscountStrategy>();
 
 var app = builder.Build();
 

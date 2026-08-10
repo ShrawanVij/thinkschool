@@ -3,6 +3,7 @@ using Moq;
 using OrderRefactor.Models;
 using OrderRefactor.Repositories;
 using OrderRefactor.Services;
+using OrderRefactor.Pricing;
 
 namespace OrderRefactor.Tests;
 
@@ -17,9 +18,16 @@ public class OrderServiceTests
         _repository = new Mock<IOrderRepository>();
         _logger = new Mock<ILogger<OrderService>>();
 
+        var strategies = new List<IPricingStrategy>
+        {
+            new LargeOrderDiscountStrategy(),
+            new VipDiscountStrategy()
+        };
+
         _service = new OrderService(
             _repository.Object,
-            _logger.Object);
+            _logger.Object,
+            strategies);
     }
 
     [Fact]
@@ -40,6 +48,66 @@ public class OrderServiceTests
 
         await Assert.ThrowsAsync<ArgumentException>(() =>
             _service.CreateOrderAsync(
+                request,
+                CancellationToken.None));
+    }
+    // Test: validation rejects orders with zero quantity
+    [Fact]
+    public async Task CreateOrder_ZeroQuantity_ThrowsArgumentException()
+    {
+        var request = new CreateOrderRequest
+        {
+            CustomerId = 1,
+            Items = new List<CreateOrderItemRequest>
+            {
+                new CreateOrderItemRequest
+                {
+                    ProductId = 1,
+                    Quantity = 0
+                }
+            }
+        };
+
+        _repository
+            .Setup(r => r.GetCustomerAsync(1, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new Customer
+            {
+                Id = 1,
+                Name = "Test Customer"
+            });
+
+        await Assert.ThrowsAsync<ArgumentException>(
+            () => _service.CreateOrderAsync(
+                request,
+                CancellationToken.None));
+    }
+    // Test: validation rejects orders with invalid product ID
+    [Fact]
+    public async Task CreateOrder_InvalidProductId_ThrowsArgumentException()
+    {
+        var request = new CreateOrderRequest
+        {
+            CustomerId = 1,
+            Items = new List<CreateOrderItemRequest>
+            {
+                new CreateOrderItemRequest
+                {
+                    ProductId = 0,
+                    Quantity = 1
+                }
+            }
+        };
+
+        _repository
+            .Setup(r => r.GetCustomerAsync(1, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new Customer
+            {
+                Id = 1,
+                Name = "Test Customer"
+            });
+
+        await Assert.ThrowsAsync<ArgumentException>(
+            () => _service.CreateOrderAsync(
                 request,
                 CancellationToken.None));
     }
@@ -139,5 +207,35 @@ public class OrderServiceTests
         Assert.Equal("Test Customer", result.CustomerName);
         Assert.Equal(200, result.Total);
         Assert.Single(result.Items);
+    }
+    // Test: validation rejects orders with negative quantity
+    [Fact]
+    public async Task CreateOrder_NegativeQuantity_ThrowsArgumentException()
+    {
+        var request = new CreateOrderRequest
+        {
+            CustomerId = 1,
+            Items = new List<CreateOrderItemRequest>
+            {
+                new CreateOrderItemRequest
+                {
+                    ProductId = 1,
+                    Quantity = -1
+                }
+            }
+        };
+
+        _repository
+            .Setup(r => r.GetCustomerAsync(1, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new Customer
+            {
+                Id = 1,
+                Name = "Test Customer"
+            });
+
+        await Assert.ThrowsAsync<ArgumentException>(
+            () => _service.CreateOrderAsync(
+                request,
+                CancellationToken.None));
     }
 }

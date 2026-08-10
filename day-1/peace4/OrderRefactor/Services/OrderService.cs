@@ -1,19 +1,23 @@
 using OrderRefactor.Models;
 using OrderRefactor.Repositories;
+using OrderRefactor.Pricing;
 
 namespace OrderRefactor.Services;
 
 public class OrderService : IOrderService
 {
     private readonly IOrderRepository _repository;
-    private readonly ILogger<OrderService> _logger;
+    private readonly ILogger _logger;
+    private readonly IEnumerable<IPricingStrategy> _pricingStrategies;
 
     public OrderService(
         IOrderRepository repository,
-        ILogger<OrderService> logger)
+        ILogger<OrderService> logger,
+        IEnumerable<IPricingStrategy> pricingStrategies)
     {
         _repository = repository;
         _logger = logger;
+        _pricingStrategies = pricingStrategies;
     }
 
     public async Task<OrderResult> CreateOrderAsync(
@@ -66,11 +70,15 @@ public class OrderService : IOrderService
             products.Add((item, product));
         }
 
-        if (total > 1000)
-            total -= 50;
+        var pricingContext = new PricingContext
+        {
+            IsVip = customer.IsVip
+        };
 
-        if (customer.IsVip)
-            total *= 0.95m;
+        foreach (var strategy in _pricingStrategies)
+        {
+            total = strategy.Apply(total, pricingContext);
+        }
 
         var order = new Order
         {
