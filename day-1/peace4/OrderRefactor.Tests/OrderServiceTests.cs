@@ -3,6 +3,7 @@ using Moq;
 using OrderRefactor.Models;
 using OrderRefactor.Repositories;
 using OrderRefactor.Services;
+using OrderRefactor.Pricing;
 
 namespace OrderRefactor.Tests;
 
@@ -17,9 +18,16 @@ public class OrderServiceTests
         _repository = new Mock<IOrderRepository>();
         _logger = new Mock<ILogger<OrderService>>();
 
+        var strategies = new List<IPricingStrategy>
+        {
+            new LargeOrderDiscountStrategy(),
+            new VipDiscountStrategy()
+        };
+
         _service = new OrderService(
             _repository.Object,
-            _logger.Object);
+            _logger.Object,
+            strategies);
     }
 
     [Fact]
