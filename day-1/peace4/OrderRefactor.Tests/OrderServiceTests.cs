@@ -1,0 +1,143 @@
+using Microsoft.Extensions.Logging;
+using Moq;
+using OrderRefactor.Models;
+using OrderRefactor.Repositories;
+using OrderRefactor.Services;
+
+namespace OrderRefactor.Tests;
+
+public class OrderServiceTests
+{
+    private readonly Mock<IOrderRepository> _repository;
+    private readonly Mock<ILogger<OrderService>> _logger;
+    private readonly OrderService _service;
+
+    public OrderServiceTests()
+    {
+        _repository = new Mock<IOrderRepository>();
+        _logger = new Mock<ILogger<OrderService>>();
+
+        _service = new OrderService(
+            _repository.Object,
+            _logger.Object);
+    }
+
+    [Fact]
+    public async Task CreateOrder_InvalidCustomer_ThrowsArgumentException()
+    {
+        var request = new CreateOrderRequest
+        {
+            CustomerId = 0,
+            Items =
+            [
+                new CreateOrderItemRequest
+                {
+                    ProductId = 1,
+                    Quantity = 1
+                }
+            ]
+        };
+
+        await Assert.ThrowsAsync<ArgumentException>(() =>
+            _service.CreateOrderAsync(
+                request,
+                CancellationToken.None));
+    }
+
+    [Fact]
+    public async Task CreateOrder_ProductNotFound_ThrowsKeyNotFoundException()
+    {
+        _repository
+            .Setup(x => x.GetCustomerAsync(
+                1,
+                It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new Customer
+            {
+                Id = 1,
+                Name = "Test Customer"
+            });
+
+        _repository
+            .Setup(x => x.GetProductAsync(
+                99,
+                It.IsAny<CancellationToken>()))
+            .ReturnsAsync((Product?)null);
+
+        var request = new CreateOrderRequest
+        {
+            CustomerId = 1,
+            Items =
+            [
+                new CreateOrderItemRequest
+                {
+                    ProductId = 99,
+                    Quantity = 1
+                }
+            ]
+        };
+
+        await Assert.ThrowsAsync<KeyNotFoundException>(() =>
+            _service.CreateOrderAsync(
+                request,
+                CancellationToken.None));
+    }
+
+    [Fact]
+    public async Task CreateOrder_ValidOrder_ReturnsOrderResult()
+    {
+        _repository
+            .Setup(x => x.GetCustomerAsync(
+                1,
+                It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new Customer
+            {
+                Id = 1,
+                Name = "Test Customer",
+                IsVip = false
+            });
+
+        _repository
+            .Setup(x => x.GetProductAsync(
+                1,
+                It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new Product
+            {
+                Id = 1,
+                Name = "Test Product",
+                Price = 100,
+                Stock = 10
+            });
+
+        _repository
+            .Setup(x => x.AddOrderAsync(
+                It.IsAny<Order>(),
+                It.IsAny<CancellationToken>()))
+            .Callback<Order, CancellationToken>((order, _) =>
+            {
+                order.Id = 1;
+            })
+            .Returns(Task.CompletedTask);
+
+        var request = new CreateOrderRequest
+        {
+            CustomerId = 1,
+            Items =
+            [
+                new CreateOrderItemRequest
+                {
+                    ProductId = 1,
+                    Quantity = 2
+                }
+            ]
+        };
+
+        var result = await _service.CreateOrderAsync(
+            request,
+            CancellationToken.None);
+
+        Assert.Equal(1, result.OrderId);
+        Assert.Equal("Test Customer", result.CustomerName);
+        Assert.Equal(200, result.Total);
+        Assert.Single(result.Items);
+    }
+}
