@@ -2,10 +2,12 @@ using Microsoft.EntityFrameworkCore;
 using QuotesApi.Data;
 using QuotesApi.Extensions;
 using QuotesApi.Middleware;
+using QuotesApi.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddInfrastructure();
+builder.Services.AddScoped<ICollectionRepository, CollectionRepository>();
 
 var app = builder.Build();
 
@@ -20,5 +22,5 @@ using (var scope = app.Services.CreateScope())
 app.MapGet("/", () => "Quotes API is running!");
 
 app.MapQuoteEndpoints();
-
+app.MapCollectionEndpoints();
 app.Run();
