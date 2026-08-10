@@ -22,6 +22,24 @@ public class ExceptionMiddleware
         {
             await _next(context);
         }
+        catch (InvalidOperationException ex)
+        {
+            _logger.LogWarning(ex, "Validation error");
+
+            context.Response.StatusCode = StatusCodes.Status400BadRequest;
+            context.Response.ContentType = "application/problem+json";
+
+            var problem = new
+            {
+                type = "https://tools.ietf.org/html/rfc9110#section-15.5.1",
+                title = "Bad Request",
+                status = 400,
+                detail = ex.Message
+            };
+
+            await context.Response.WriteAsync(
+                JsonSerializer.Serialize(problem));
+        }
         catch (Exception ex)
         {
             _logger.LogError(
