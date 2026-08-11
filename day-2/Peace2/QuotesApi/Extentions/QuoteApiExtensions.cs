@@ -76,99 +76,66 @@ public static class QuoteApiExtensions
         });
 
         app.MapPost("/api/quotes", async (
-    Quote quote,
-    IQuoteRepository repository,
-    CancellationToken cancellationToken,
-    ILoggerFactory loggerFactory) =>
-{
-    var logger = loggerFactory.CreateLogger("QuoteApi");
-
-    if (string.IsNullOrWhiteSpace(quote.Author) ||
-        string.IsNullOrWhiteSpace(quote.Text))
-    {
-        logger.LogWarning(
-            "Invalid quote submitted: author or text is missing.");
-
-        var errors = new Dictionary<string, string[]>();
-
-        if (string.IsNullOrWhiteSpace(quote.Author))
+            CreateQuoteRequest request,
+            IQuoteRepository repository,
+            CancellationToken cancellationToken,
+            ILoggerFactory loggerFactory) =>
         {
-            errors["author"] = new[]
+            var logger = loggerFactory.CreateLogger("QuoteApi");
+
+            var result = Quote.Create(
+                request.Author,
+                request.Text);
+
+            if (result.Error is not null)
             {
-                "Author is required."
-            };
-        }
+                logger.LogWarning(
+                    "Invalid quote submitted: {Code}",
+                    result.Error.Code);
 
-        if (string.IsNullOrWhiteSpace(quote.Text))
-        {
-            errors["text"] = new[]
-            {
-                "Text is required."
-            };
-        }
+                return Results.ValidationProblem(
+                    new Dictionary<string, string[]>
+                    {
+                        ["quote"] = new[]
+                        {
+                            result.Error.Message
+                        }
+                    });
+            }
 
-        return Results.ValidationProblem(errors);
-    }
+            var createdQuote = await repository.AddAsync(
+                result.Quote!,
+                cancellationToken);
 
-    if (quote.Author.Length > 100)
-    {
-        logger.LogWarning(
-            "Invalid quote submitted: author exceeds 100 characters.");
+            logger.LogInformation(
+                "Created quote with ID {QuoteId}",
+                createdQuote.Id);
 
-        return Results.ValidationProblem(
-            new Dictionary<string, string[]>
-            {
-                ["author"] = new[]
-                {
-                    "Author cannot exceed 100 characters."
-                }
-            });
-    }
-
-    if (quote.Text.Length > 1000)
-    {
-        logger.LogWarning(
-            "Invalid quote submitted: text exceeds 1000 characters.");
-
-        return Results.ValidationProblem(
-            new Dictionary<string, string[]>
-            {
-                ["text"] = new[]
-                {
-                    "Text cannot exceed 1000 characters."
-                }
-            });
-    }
-
-    quote.Id = 0;
-
-    var createdQuote = await repository.AddAsync(
-        quote,
-        cancellationToken);
-
-    logger.LogInformation(
-        "Created quote with ID {QuoteId}",
-        createdQuote.Id);
-
-    return Results.Created(
-        $"/api/quotes/{createdQuote.Id}",
-        createdQuote);
-});
+            return Results.Created(
+                $"/api/quotes/{createdQuote.Id}",
+                createdQuote);
+        });
 
         app.MapDelete("/api/quotes/{id:int}", async (
             int id,
             IQuoteRepository repository,
             CancellationToken cancellationToken) =>
         {
-            var deleted = await repository.DeleteAsync(
+            var quote = await repository.GetByIdForUpdateAsync(
                 id,
                 cancellationToken);
 
-            return deleted
-                ? Results.NoContent()
-                : Results.NotFound();
+            if (quote is null)
+                return Results.NotFound();
+
+            quote.SoftDelete();
+
+            await repository.SaveAsync(cancellationToken);
+
+            return Results.NoContent();
         });
 
         return app;
     }
+    public record CreateQuoteRequest(string Author, string Text);
 }

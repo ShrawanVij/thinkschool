@@ -17,7 +17,10 @@ public interface IQuoteRepository
         Quote quote,
         CancellationToken cancellationToken);
 
-    Task<bool> DeleteAsync(
+    Task<Quote?> GetByIdForUpdateAsync(
         int id,
+        CancellationToken cancellationToken);
+
+    Task<bool> SaveAsync(
         CancellationToken cancellationToken);
 }

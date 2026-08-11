@@ -20,6 +20,7 @@ public class QuoteRepository : IQuoteRepository
     {
         return await _db.Quotes
             .AsNoTracking()
+            .Where(q => !q.IsDeleted)
             .OrderBy(q => q.Id)
             .Skip((page - 1) * size)
             .Take(size)
@@ -32,7 +33,9 @@ public class QuoteRepository : IQuoteRepository
     {
         return await _db.Quotes
             .AsNoTracking()
-            .FirstOrDefaultAsync(q => q.Id == id, cancellationToken);
+            .FirstOrDefaultAsync(
+                q => q.Id == id && !q.IsDeleted,
+                cancellationToken);
     }
 
     public async Task<Quote> AddAsync(
@@ -45,19 +48,20 @@ public class QuoteRepository : IQuoteRepository
         return quote;
     }
 
-    public async Task<bool> DeleteAsync(
+    public async Task<Quote?> GetByIdForUpdateAsync(
         int id,
         CancellationToken cancellationToken)
     {
-        var quote = await _db.Quotes
-            .FirstOrDefaultAsync(q => q.Id == id, cancellationToken);
+        return await _db.Quotes
+            .FirstOrDefaultAsync(
+                q => q.Id == id,
+                cancellationToken);
+    }
 
-        if (quote is null)
-            return false;
-
-        _db.Quotes.Remove(quote);
+    public async Task<bool> SaveAsync(
+        CancellationToken cancellationToken)
+    {
         await _db.SaveChangesAsync(cancellationToken);
-
         return true;
     }
 }
