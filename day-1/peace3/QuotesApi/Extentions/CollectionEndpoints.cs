@@ -1,5 +1,6 @@
 using QuotesApi.Models;
 using QuotesApi.Repositories;
+using QuotesApi.Services;
 
 namespace QuotesApi.Extensions;
 
@@ -21,14 +22,15 @@ public static class CollectionEndpoints
         app.MapPost("/collections/{id}/items", async (
             int id,
             AddCollectionItemRequest request,
-            ICollectionRepository repository) =>
+            ICollectionRepository repository,
+            IClock clock) =>
         {
             var collection = await repository.GetById(id);
 
             if (collection is null)
                 return Results.NotFound();
 
-            collection.AddItem(request.QuoteId);
+            collection.AddItem(request.QuoteId, clock);
 
             await repository.Update(collection);
 

@@ -1,9 +1,12 @@
 using QuotesApi.Models;
+using QuotesApi.Services;
 
 namespace QuotesApi.Tests;
 
 public class CollectionTests
 {
+    private readonly IClock _clock = new FakeClock();
+
     [Fact]
     public void RejectsNameShorterThan3Characters()
     {
@@ -25,10 +28,10 @@ public class CollectionTests
     {
         var collection = new Collection(1, "My Quotes");
 
-        collection.AddItem(10);
+        collection.AddItem(10, _clock);
 
         Assert.Throws<InvalidOperationException>(
-            () => collection.AddItem(10));
+            () => collection.AddItem(10, _clock));
     }
 
     [Fact]
@@ -37,10 +40,10 @@ public class CollectionTests
         var collection = new Collection(1, "My Quotes");
 
         for (var i = 1; i <= 50; i++)
-            collection.AddItem(i);
+            collection.AddItem(i, _clock);
 
         Assert.Throws<InvalidOperationException>(
-            () => collection.AddItem(51));
+            () => collection.AddItem(51, _clock));
     }
 
     [Fact]
@@ -48,7 +51,7 @@ public class CollectionTests
     {
         var collection = new Collection(1, "My Quotes");
 
-        collection.AddItem(10);
+        collection.AddItem(10, _clock);
         collection.RemoveItem(10);
 
         Assert.Empty(collection.Items);

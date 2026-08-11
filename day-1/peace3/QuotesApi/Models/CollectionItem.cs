@@ -1,3 +1,5 @@
+using QuotesApi.Services;
+
 namespace QuotesApi.Models;
 
 public class CollectionItem
@@ -10,9 +12,9 @@ public class CollectionItem
     {
     }
 
-    public CollectionItem(int quoteId)
+    public CollectionItem(int quoteId, IClock clock)
     {
         QuoteId = quoteId;
-        AddedAt = DateTime.UtcNow;
+        AddedAt = clock.UtcNow.UtcDateTime;
     }
 }

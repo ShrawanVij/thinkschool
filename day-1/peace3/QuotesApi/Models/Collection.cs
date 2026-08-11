@@ -1,3 +1,5 @@
+using QuotesApi.Services;
+
 namespace QuotesApi.Models;
 
 public class Collection
@@ -24,7 +26,7 @@ public class Collection
         Name = name;
     }
 
-    public void AddItem(int quoteId)
+    public void AddItem(int quoteId, IClock clock)
     {
         if (Items.Count >= 50)
             throw new InvalidOperationException("A collection cannot contain more than 50 items.");
@@ -32,7 +34,7 @@ public class Collection
         if (Items.Any(x => x.QuoteId == quoteId))
             throw new InvalidOperationException("Quote already exists in the collection.");
 
-        Items.Add(new CollectionItem(quoteId));
+        Items.Add(new CollectionItem(quoteId, clock));
     }
 
     public void RemoveItem(int quoteId)
