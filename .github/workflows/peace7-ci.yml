@@ -23,4 +23,4 @@ jobs:
         run: dotnet restore day-3/Peace7/Quotes.Tests.Integration/Quotes.Tests.Integration.csproj
 
       - name: Test
-        run: dotnet test day-3/Peace7/Quotes.Tests.Integration/Quotes.Tests.Integration.csproj --no-restore
+        run: dotnet test day-3/Peace7/Quotes.Tests.Integration/Quotes.Tests.Integration.csproj --no-restore --logger "console;verbosity=detailed"
