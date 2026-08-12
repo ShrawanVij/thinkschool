@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "c:\\Users\\sharw\\thinkschool\\thinkschool\\day-3\\Peace5\\QuotesApi.Tests\\QuotesApi.Tests.csproj": {}
+    "C:\\Users\\sharw\\thinkschool\\thinkschool\\day-3\\Peace5\\Quotes.Tests.Integration\\Quotes.Tests.Integration.csproj": {}
   },
   "projects": {
-    "c:\\Users\\sharw\\thinkschool\\thinkschool\\day-3\\Peace5\\QuotesApi.Tests\\QuotesApi.Tests.csproj": {
+    "C:\\Users\\sharw\\thinkschool\\thinkschool\\day-3\\Peace5\\Quotes.Tests.Integration\\Quotes.Tests.Integration.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "c:\\Users\\sharw\\thinkschool\\thinkschool\\day-3\\Peace5\\QuotesApi.Tests\\QuotesApi.Tests.csproj",
-        "projectName": "QuotesApi.Tests",
-        "projectPath": "c:\\Users\\sharw\\thinkschool\\thinkschool\\day-3\\Peace5\\QuotesApi.Tests\\QuotesApi.Tests.csproj",
+        "projectUniqueName": "C:\\Users\\sharw\\thinkschool\\thinkschool\\day-3\\Peace5\\Quotes.Tests.Integration\\Quotes.Tests.Integration.csproj",
+        "projectName": "Quotes.Tests.Integration",
+        "projectPath": "C:\\Users\\sharw\\thinkschool\\thinkschool\\day-3\\Peace5\\Quotes.Tests.Integration\\Quotes.Tests.Integration.csproj",
         "packagesPath": "C:\\Users\\sharw\\.nuget\\packages\\",
-        "outputPath": "c:\\Users\\sharw\\thinkschool\\thinkschool\\day-3\\Peace5\\QuotesApi.Tests\\obj\\",
+        "outputPath": "C:\\Users\\sharw\\thinkschool\\thinkschool\\day-3\\Peace5\\Quotes.Tests.Integration\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\sharw\\AppData\\Roaming\\NuGet\\NuGet.Config"
@@ -27,8 +27,8 @@
             "framework": "net10.0",
             "targetAlias": "net10.0",
             "projectReferences": {
-              "c:\\Users\\sharw\\thinkschool\\thinkschool\\day-3\\Peace5\\QuotesApi\\QuotesApi.csproj": {
-                "projectPath": "c:\\Users\\sharw\\thinkschool\\thinkschool\\day-3\\Peace5\\QuotesApi\\QuotesApi.csproj"
+              "C:\\Users\\sharw\\thinkschool\\thinkschool\\day-3\\Peace5\\QuotesApi\\QuotesApi.csproj": {
+                "projectPath": "C:\\Users\\sharw\\thinkschool\\thinkschool\\day-3\\Peace5\\QuotesApi\\QuotesApi.csproj"
               }
             }
           }
@@ -56,15 +56,15 @@
             },
             "Microsoft.AspNetCore.Mvc.Testing": {
               "target": "Package",
-              "version": "[10.0.10, )"
+              "version": "[10.0.11, )"
+            },
+            "Microsoft.EntityFrameworkCore.Sqlite": {
+              "target": "Package",
+              "version": "[10.0.11, )"
             },
             "Microsoft.NET.Test.Sdk": {
               "target": "Package",
               "version": "[17.14.1, )"
-            },
-            "NSubstitute": {
-              "target": "Package",
-              "version": "[6.2.0, )"
             },
             "coverlet.collector": {
               "target": "Package",
@@ -373,14 +373,14 @@
         }
       }
     },
-    "c:\\Users\\sharw\\thinkschool\\thinkschool\\day-3\\Peace5\\QuotesApi\\QuotesApi.csproj": {
+    "C:\\Users\\sharw\\thinkschool\\thinkschool\\day-3\\Peace5\\QuotesApi\\QuotesApi.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "c:\\Users\\sharw\\thinkschool\\thinkschool\\day-3\\Peace5\\QuotesApi\\QuotesApi.csproj",
+        "projectUniqueName": "C:\\Users\\sharw\\thinkschool\\thinkschool\\day-3\\Peace5\\QuotesApi\\QuotesApi.csproj",
         "projectName": "QuotesApi",
-        "projectPath": "c:\\Users\\sharw\\thinkschool\\thinkschool\\day-3\\Peace5\\QuotesApi\\QuotesApi.csproj",
+        "projectPath": "C:\\Users\\sharw\\thinkschool\\thinkschool\\day-3\\Peace5\\QuotesApi\\QuotesApi.csproj",
         "packagesPath": "C:\\Users\\sharw\\.nuget\\packages\\",
-        "outputPath": "c:\\Users\\sharw\\thinkschool\\thinkschool\\day-3\\Peace5\\QuotesApi\\obj\\",
+        "outputPath": "C:\\Users\\sharw\\thinkschool\\thinkschool\\day-3\\Peace5\\QuotesApi\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\sharw\\AppData\\Roaming\\NuGet\\NuGet.Config"
