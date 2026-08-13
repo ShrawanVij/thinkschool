@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.TestHost;
 using QuotesApi.Data;
 using QuotesApi.Models;
 using System.Text;
+using System.Text.Json;
 using Microsoft.Extensions.Configuration;
 
 public class AuthorizationTests
@@ -103,6 +104,123 @@ public class AuthorizationTests
             {
                 author = "Expired User",
                 text = "This should not be created"
+            });
+
+        Assert.Equal(
+            HttpStatusCode.Unauthorized,
+            response.StatusCode);
+    }
+
+    [Fact]
+    public async Task Login_ValidCredentials_ReturnsTokens()
+    {
+        var factory = new WebApplicationFactory<Program>();
+        var client = factory.CreateClient();
+
+        var response = await client.PostAsJsonAsync(
+            "/api/auth/login",
+            new
+            {
+                email = "test@example.com",
+                password = "Test123!"
+            });
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+        var body = await response.Content.ReadFromJsonAsync<JsonElement>();
+
+        Assert.True(body.TryGetProperty("access_token", out _));
+        Assert.True(body.TryGetProperty("refresh_token", out _));
+    }
+
+
+    [Fact]
+    public async Task Login_WrongPassword_Returns401()
+    {
+        var factory = new WebApplicationFactory<Program>();
+        var client = factory.CreateClient();
+
+        var response = await client.PostAsJsonAsync(
+            "/api/auth/login",
+            new
+            {
+                email = "test@example.com",
+                password = "WrongPassword!"
+            });
+
+        Assert.Equal(
+            HttpStatusCode.Unauthorized,
+            response.StatusCode);
+    }
+
+
+    [Fact]
+    public async Task Login_UnknownUser_Returns401()
+    {
+        var factory = new WebApplicationFactory<Program>();
+        var client = factory.CreateClient();
+
+        var response = await client.PostAsJsonAsync(
+            "/api/auth/login",
+            new
+            {
+                email = "doesnotexist@example.com",
+                password = "Test123!"
+            });
+
+        Assert.Equal(
+            HttpStatusCode.Unauthorized,
+            response.StatusCode);
+    }
+
+
+    [Fact]
+    public async Task Refresh_InvalidToken_Returns401()
+    {
+        var factory = new WebApplicationFactory<Program>();
+        var client = factory.CreateClient();
+
+        var response = await client.PostAsJsonAsync(
+            "/api/auth/refresh",
+            new
+            {
+                refreshToken = "completely-invalid-refresh-token"
+            });
+
+        Assert.Equal(
+            HttpStatusCode.Unauthorized,
+            response.StatusCode);
+    }
+
+
+    [Fact]
+    public async Task Refresh_ExpiredToken_Returns401()
+    {
+        var factory = new WebApplicationFactory<Program>();
+
+        using (var scope = factory.Services.CreateScope())
+        {
+            var db = scope.ServiceProvider
+                .GetRequiredService<QuoteDbContext>();
+
+            db.RefreshTokens.Add(new RefreshToken
+            {
+                Token = BCrypt.Net.BCrypt.HashPassword(
+                    "expired-refresh-token"),
+                UserId = 1,
+                ExpiresAt = DateTime.UtcNow.AddMinutes(-5)
+            });
+
+            await db.SaveChangesAsync();
+        }
+
+        var client = factory.CreateClient();
+
+        var response = await client.PostAsJsonAsync(
+            "/api/auth/refresh",
+            new
+            {
+                refreshToken = "expired-refresh-token"
             });
 
         Assert.Equal(
