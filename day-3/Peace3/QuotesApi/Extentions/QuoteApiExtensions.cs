@@ -35,6 +35,11 @@ public static class QuoteApiExtensions
             var currentPage = page ?? 1;
             var currentSize = size ?? 10;
 
+            logger.LogInformation(
+                "Starting quote request for page {Page} with size {Size}",
+                currentPage,
+                currentSize);
+
             if (currentPage < 1 || currentSize < 1 || currentSize > 100)
             {
                 logger.LogWarning(
@@ -47,7 +52,12 @@ public static class QuoteApiExtensions
             }
 
             logger.LogInformation(
-                "Fetching quotes: page={Page}, size={Size}",
+                "Fetching quotes {Page} {Size}",
+                currentPage,
+                currentSize);
+
+            logger.LogInformation(
+                "Querying quote repository for page {Page}",
                 currentPage,
                 currentSize);
 
@@ -60,21 +70,43 @@ public static class QuoteApiExtensions
                 "Fetched {Count} quotes",
                 quotes.Count);
 
+            logger.LogInformation(
+                "Quote request completed successfully with {Count} results",
+                quotes.Count);
+
             return Results.Ok(quotes);
         });
 
         app.MapGet("/api/quotes/{id:int}", async (
             int id,
             IQuoteRepository repository,
-            CancellationToken cancellationToken) =>
+            CancellationToken cancellationToken,
+            ILoggerFactory loggerFactory) =>
         {
+            var logger = loggerFactory.CreateLogger("QuoteApi");
+
+            logger.LogInformation(
+                "Starting quote request for {QuoteId}",
+                id);
+
             var quote = await repository.GetByIdAsync(
                 id,
                 cancellationToken);
 
-            return quote is null
-                ? Results.NotFound()
-                : Results.Ok(quote);
+            if (quote is null)
+            {
+                logger.LogWarning(
+                    "Quote {QuoteId} was not found",
+                    id);
+
+                return Results.NotFound();
+            }
+
+            logger.LogInformation(
+                "Quote {QuoteId} retrieved successfully",
+                id);
+
+            return Results.Ok(quote);
         });
 
         app.MapPost("/api/quotes", async (
