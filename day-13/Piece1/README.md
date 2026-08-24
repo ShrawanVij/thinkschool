@@ -163,11 +163,11 @@ No `app.module.ts` exists anywhere in the project — `ng new` with the current 
 
 ## Screnshots
 ### 1. Quotes Showing
-![1_Quotes_Showing.png](../Screenshot/1_Quotes_Showing.png)
+![1_Quotes_Showing.png](../Piece1/Screenshot/1_Quotes_Showing.png)
 ### 2. Author Search
-![2_Author_Search.png](../Screenshot/2_Author_Search.png)
+![2_Author_Search.png](../Piece1/Screenshot/2_Author_Search.png)
 ### 3. API Not Working
-![3_API_Not_Working.png](../Screenshot/3_API_Not_Working.png)
+![3_API_Not_Working.png](../Piece1/Screenshot/3_API_Not_Working.png)
 
 ---
 ## 3. Verification log
