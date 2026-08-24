@@ -161,6 +161,15 @@ No `app.module.ts` exists anywhere in the project — `ng new` with the current 
 
 ---
 
+## Screnshots
+### 1. Quotes Showing
+![1_Quotes_Showing.png](../Screenshot/1_Quotes_Showing.png)
+### 2. Author Search
+![2_Author_Search.png](../Screenshot/2_Author_Search.png)
+### 3. API Not Working
+![3_API_Not_Working.png](../Screenshot/3_API_Not_Working.png)
+
+---
 ## 3. Verification log
 
 **States/edges exercised** (real headless-Chromium run via Playwright against `ng serve` + the real running backend, plus 5 passing unit tests in `quote-feed.component.spec.ts`):
