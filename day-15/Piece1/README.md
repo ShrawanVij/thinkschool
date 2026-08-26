@@ -96,7 +96,7 @@ Confirmed: **zero retries ever happened**, for any request, silently — the ret
 
 ## 4. Verification log
 
-All states re-verified live against the real running backend (`http://127.0.0.1:5220`) and frontend (`http://localhost:4200`):
+All states re-verified live against the real running backend (`http://127.0.0.1:5220`) and frontend (`http://localhost:4200`). Note: the database was later swapped back to restore Day 14's accumulated quotes (10,014 of them), so the specific `Quote #1 by Interceptor Live Check` quote referenced below no longer exists in the live app — the verification itself was real and live at the time; only the underlying data has since changed. The "Friendly 4xx" and "Empty" screenshots below (`02-Page-Empty-Error.png`, and `03-Server-Down-Error.png`, a genuine `status 0` network failure captured when the backend was briefly stopped) reflect the current, larger dataset.
 
 - **Empty**: fresh database, `GET /api/quotes?page=1&size=5` → real `[]` → demo panel shows "No quotes on this page."
 - **Loading**: demo panel shows a loading message immediately on mount, before the real request resolves.
@@ -106,6 +106,7 @@ All states re-verified live against the real running backend (`http://127.0.0.1:
 - **Retry-with-backoff (post-fix)**: intercepted `GET /api/quotes?page=1&size=5` to fail once with a real 503 then succeed — **2 real requests observed**, ~321ms apart (matches the 300ms base backoff), and the recovered data rendered.
 - **No retry on a real 4xx**: intercepted the `page=0` request — **exactly 1 request made**, no retry.
 - **No retry on POST**: unit-tested (`interceptor-chain.integration.spec.ts`) — a POST that fails with a transient 503 is never retried, since only `GET` is eligible.
+- **Real network failure (status 0)**: caught genuinely, not staged — with the backend briefly stopped, the demo panel showed **"Could not reach the server. Please check your connection. (status 0)"** (see `03-Server-Down-Error.png`), confirming the `err.status === 0` branch of `mapToAppError` fires correctly on an actual connection failure, not just a mocked one.
 
 **Tests**: backend — 4/4 characterization tests green (run before any UI code), full `QuotesApi.Tests` suite otherwise unaffected (3 pre-existing, unrelated flaky benchmark/ordering failures, not touched by this work). Frontend — 44/44 passing, including the new `error.interceptor.spec.ts` (5 tests), `auth.interceptor.spec.ts` (2), `interceptor-chain.integration.spec.ts` (3, including the ordering bug regression test), and `api-quotes-demo.component.spec.ts` (4).
 
