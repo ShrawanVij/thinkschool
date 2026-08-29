@@ -54,6 +54,16 @@ ng e2e
 
 Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
 
+## Screenshots
+### 1. Live SWA home feed
+![Live SWA home feed](../Screenshots/01-live-swa-home-feed.png)
+### 2. Quote cards with delete
+![Quote cards with delete](../Screenshots/02-quote-cards-with-delete.png)
+### 3. Logged in nav
+![Logged in nav](../Screenshots/03-logged-in-nav.png)
+### 4. Create quote page
+![Create quote page](../Screenshots/04-create-quote-page.png)
+
 ## Additional Resources
 
 For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
