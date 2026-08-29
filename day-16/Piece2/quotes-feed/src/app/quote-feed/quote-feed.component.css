@@ -140,3 +140,21 @@
   color: #a49bb5;
   margin: 6px 0 0;
 }
+
+.quote-delete {
+  margin-top: 12px;
+  padding: 6px 14px;
+  font-family: inherit;
+  font-size: 0.8rem;
+  border: 1px solid #e3ddef;
+  border-radius: 999px;
+  background: #faf9fc;
+  color: #b03a5b;
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.quote-delete:hover {
+  background: #fbe9ee;
+  border-color: #e3a9b8;
+}

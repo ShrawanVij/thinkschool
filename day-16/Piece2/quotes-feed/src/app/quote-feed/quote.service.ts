@@ -28,4 +28,8 @@ export class QuoteService {
   createQuote(request: CreateQuoteRequest): Observable<CreateQuoteResult> {
     return this.http.post<CreateQuoteResult>(`${this.baseUrl}/cqrs/quotes`, request);
   }
+
+  deleteQuote(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.baseUrl}/api/quotes/${id}`);
+  }
 }

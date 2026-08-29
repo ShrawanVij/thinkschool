@@ -57,6 +57,13 @@
         <p class="quote-text">&ldquo;{{ quote.text }}&rdquo;</p>
         <p class="quote-author">&mdash; {{ quote.author }}</p>
         <p class="quote-date">{{ quote.createdAt | date: 'mediumDate' }}</p>
+        <button
+          type="button"
+          class="quote-delete"
+          (click)="$event.preventDefault(); $event.stopPropagation(); onDelete(quote.id)"
+        >
+          Delete
+        </button>
       </a>
     } @empty {
       <p class="state-message">No quotes match "{{ searchTerm() }}".</p>

@@ -36,4 +36,11 @@ export class QuoteFeedComponent {
   onSortOrderChange(value: string): void {
     this.store.setSortOrder(value);
   }
+
+  onDelete(id: number): void {
+    if (!confirm('Delete this quote?')) {
+      return;
+    }
+    this.store.deleteQuote(id);
+  }
 }

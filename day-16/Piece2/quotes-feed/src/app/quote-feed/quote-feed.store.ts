@@ -72,4 +72,12 @@ export class QuoteFeedStore {
   setSortOrder(value: string): void {
     this.sortOrder.set(value as SortOrder);
   }
+
+  deleteQuote(id: number): void {
+    this.quoteService.deleteQuote(id).subscribe({
+      next: () => {
+        this.quotes.update((quotes) => quotes.filter((quote) => quote.id !== id));
+      },
+    });
+  }
 }
