@@ -24,7 +24,9 @@ public static class QuoteApiExtensions
 
             options.UseSqlite($"Data Source={dbPath}");
 
-            var sqlLogPath = Path.Combine(AppContext.BaseDirectory, "sql.log");
+            var sqlLogPath = OperatingSystem.IsWindows()
+                ? Path.Combine(AppContext.BaseDirectory, "sql.log")
+                : "/tmp/sql.log";
             options.LogTo(
                 line =>
                 {
